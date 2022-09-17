@@ -1,6 +1,11 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './components/App.jsx';
+import init from './init';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
+const app = async () => {
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  const vdom = await init();
+  root.render(vdom);
+};
+
+app();

@@ -1,20 +1,21 @@
-import i18next from 'i18next';
+import i18n from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
-import App from './components/App';
+import App from './App';
 import resources from './locales/index.js';
 
 const init = async () => {
-  const i18n = i18next.createInstance();
+  const defaultlanguage = 'ru';
 
   await i18n
     .use(initReactI18next)
     .init({
+      lng: defaultlanguage,
+      debug: false,
       resources,
-      fallbackLng: 'ru',
     });
 
   return (
-    <I18nextProvider i18n={i18n}>
+    <I18nextProvider i18={i18n}>
       <App />
     </I18nextProvider>
   );
