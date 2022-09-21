@@ -1,6 +1,7 @@
 export default {
   translation: {
     chatLogo: 'Hexlet Chat',
+    signOut: 'Выйти',
     forms: {
       password: 'Пароль',
       required: 'Обязательное поле',
@@ -8,6 +9,7 @@ export default {
         title: 'Войти',
         username: 'Ваш ник',
         submit: 'Войти',
+        error: 'Неверные имя пользователя или пароль',
       },
       signUp: {
         title: 'Регистрация',
