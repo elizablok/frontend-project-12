@@ -1,53 +1,3 @@
-// import { createSlice, createEntityAdapter, createAsyncThunk } from '@reduxjs/toolkit';
-// import axios from 'axios';
-// import getRoutes from '../routes';
-
-// export const fetchData = createAsyncThunk('channels/fetchChannels', async (payload) => {
-//   const { data } = await axios.get(getRoutes.data(), { headers: payload, });
-//   return data;
-// });
-
-// const channelsAdapter = createEntityAdapter();
-
-// const initialState = channelsAdapter.getInitialState({
-//   currentChannelId: 1,
-// });
-
-// const channelsReducer = createSlice({
-//   name: 'channels',
-//   initialState,
-//   reducers: {
-//     setCurrentChannel(state, { payload }) {
-//       state.currentChannelId = payload;
-//     },
-//     addChannel: channelsAdapter.addOne,
-//     removeChannel: channelsAdapter.removeOne,
-//     renameChannel: channelsAdapter.updateOne,
-//   },
-//   extraReducers: (builder) => {
-//     builder
-//       .addCase(fetchData.fulfilled, (state, { payload }) => {
-//         const { channels } = payload;
-//         channelsAdapter.setAll(state, channels);
-//       })
-//       .addCase(fetchData.rejected, (_state, { error }) => {
-//         throw error;
-//       });
-//   },
-// });
-
-// export const selectors = channelsAdapter.getSelectors((state) => state.channels);
-
-// export const {
-//     setChannels,
-//     setCurrentChannel,
-//     addChannel,
-//     removeChannel,
-//     renameChannel,
-//   } = channelsReducer.actions;
-
-// export default channelsReducer.reducer;
-
 import { createSlice, createEntityAdapter, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import getRoutes from '../routes';
@@ -65,54 +15,71 @@ export const fetchData = createAsyncThunk(
 const channelsAdapter = createEntityAdapter();
 const initialState = channelsAdapter.getInitialState({
   currentChannelId: 1,
-  isLoading: false,
+  isLoading: true,
   loadingError: null,
 });
 
-const channelsReducer = createSlice({
+const channelsSlice = createSlice({
   name: 'channels',
   initialState,
   reducers: {
     setCurrentChannel(state, { payload }) {
-      state.currentChannelId = payload;
+      const currentChannelId = payload;
+      return { ...state, currentChannelId };
     },
     addChannel: channelsAdapter.addOne,
     deleteChannel: channelsAdapter.removeOne,
-    channelRename: channelsAdapter.updateOne,
+    changeChannel: channelsAdapter.updateOne,
   },
   extraReducers: (builder) => {
     builder.addCase(fetchData.pending, (state) => {
-      state.isLoading = true;
-      state.loadingError = null;
+      const isLoading = true;
+      const loadingError = null;
+      return { ...state, isLoading, loadingError };
     }).addCase(fetchData.fulfilled, (state, { payload }) => {
       const { channels } = payload;
-      channelsAdapter.setAll(state, channels);
-      state.isLoading = false;
-      state.loadingError = null;
+      const ids = channels.map(({ id }) => id);
+      const entries = channels.map(({ id, name, removable }) => [id, { id, name, removable }]);
+      const entities = Object.fromEntries(entries);
+      const isLoading = false;
+      const loadingError = null;
+      return {
+        ...state, ids, entities, isLoading, loadingError,
+      };
     }).addCase(fetchData.rejected, (state, { error }) => {
-      state.isLoading = false;
-      state.loadingError = error;
+      const isLoading = false;
+      const loadingError = error;
+      return { ...state, isLoading, loadingError };
     });
   },
 });
 
-export const selectors = channelsAdapter.getSelectors((state) => {
-  return state.channels;
-});
+const selectors = channelsAdapter.getSelectors((state) => state.channels);
 
-export const getChannels = (state) => selectors.selectAll(state);
-export const getActualChannel = (state) => state.channels.currentChannelId;
+const getChannels = (state) => selectors.selectAll(state);
+const getCurrentChannelId = (state) => state.channels.currentChannelId;
+const getChannelById = (state, id) => selectors.selectById(state, id);
+const getChannelsName = (state) => getChannels(state).map((channel) => channel.name);
 
-export const getChannelsName = (state) => getChannels(state).map((channel) => channel.name);
-
-export const getLoading = (state) => state.channels.isLoading;
-export const getError = (state) => state.channels.loadingError;
+const getLoading = (state) => state.channels.isLoading;
+const getError = (state) => state.channels.loadingError;
 
 export const {
   setChannels,
   setCurrentChannel,
   addChannel,
   deleteChannel,
-  channelRename,
-} = channelsReducer.actions;
-export default channelsReducer.reducer;
+  changeChannel,
+} = channelsSlice.actions;
+
+export {
+  selectors,
+  getChannels,
+  getCurrentChannelId,
+  getChannelById,
+  getChannelsName,
+  getLoading,
+  getError,
+};
+
+export default channelsSlice.reducer;

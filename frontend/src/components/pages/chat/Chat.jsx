@@ -1,12 +1,15 @@
 import { Container, Row } from 'react-bootstrap';
-import ChannelPanel from './ChannelPanel';
-import ChannelsPanel from './ChannelsPanel';
-import { selectors } from '../../../slices/channelsSlice';
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchData } from '../../../slices/channelsSlice';
-import { useAuth } from '../../../contexts/index';
-import store from '../../../slices/index';
+import ChannelsPanel from './channelComponents/ChannelsPanel';
+import MessagesPanel from './messageComponents/MessagesPanel';
+import {
+  fetchData, getChannels, getChannelById, getCurrentChannelId,
+  getLoading, getError,
+} from '../../../slices/channelsSlice';
+import { useAuth } from '../../../contexts/AuthProvider';
+import LoadingErrorButton from './LoadingErrorButton';
+import LoadSpinner from './LoadSpinner';
 
 const Chat = () => {
   const { getAuthHeader } = useAuth();
@@ -15,17 +18,34 @@ const Chat = () => {
   useEffect(() => {
     dispatch(fetchData(getAuthHeader()));
   }, [dispatch, getAuthHeader]);
-  const channels = Object.values(store.getState().channels.entities);
-  const currentChannelId = useSelector((state) => state.channels.currentChannelId);
-  const currentChannel = channels.find((channel) => channel.id === currentChannelId);
+
+  const channels = useSelector((state) => getChannels(state));
+  const currentChannelId = useSelector(getCurrentChannelId);
+  const currentChannel = useSelector((state) => getChannelById(state, currentChannelId));
+
+  console.log(useSelector((state) => state.channels));
+
+  const loading = useSelector(getLoading);
+  const isLoading = () => loading;
+  const loadingError = useSelector(getError);
+
+  const handleReload = () => fetchData(getAuthHeader());
 
   return (
-    <Container className='h-100 my-4 overflow-hidden rounded shadow'>
-      <Row className='h-100 bg-white flex-md-row'>
-        <ChannelPanel channel={currentChannel} />
-        <ChannelsPanel channels={channels} />
-      </Row>
-    </Container>
+    isLoading() ? <LoadSpinner /> : (
+      <Container className="h-100 my-4 overflow-hidden rounded shadow">
+        <Row className="h-100 bg-white flex-md-row">
+          { loadingError ? (
+            <LoadingErrorButton loadingError={loadingError} reloadHandler={handleReload} />
+          ) : (
+            <>
+              <ChannelsPanel channels={channels} />
+              <MessagesPanel channel={currentChannel} />
+            </>
+          ) }
+        </Row>
+      </Container>
+    )
   );
 };
 
