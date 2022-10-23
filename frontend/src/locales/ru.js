@@ -30,9 +30,25 @@ export default {
         error: 'Неверные имя пользователя или пароль',
       },
       signUp: {
+        username: 'Имя пользователя',
+        password: 'Пароль',
+        confirmPassword: 'Подтвердите пароль',
+        passwordsMustMatch: 'Пароли должны совпадать',
         title: 'Регистрация',
-        repeatPassword: 'Подтвердите пароль',
         submit: 'Зарегистрироваться',
+        errors: {
+          network: 'Ошибка сети',
+          username: {
+            minmax: 'От 3 до 20 символов',
+            unavailable: 'Такой пользователь уже существует',
+          },
+          password: {
+            min: 'Не менее 6 символов',
+          },
+          confirmPassword: {
+            shouldMatch: 'Пароли должны совпадать',
+          },
+        },
       },
       message: {
         placeholder: 'Введите сообщение',
