@@ -20,7 +20,8 @@ export default {
       },
     },
     channels: {
-      dropdown: {
+      managing: {
+        title: 'Управление каналом',
         rename: 'Переименовать',
         remove: 'Удалить',
       },
