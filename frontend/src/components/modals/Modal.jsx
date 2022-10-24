@@ -1,3 +1,4 @@
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getModalState, closeModal } from '../../slices/modalsSlice';
 import getModal from './index';

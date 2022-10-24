@@ -1,3 +1,4 @@
+import React from 'react';
 import { ButtonGroup, Dropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 

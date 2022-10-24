@@ -1,3 +1,4 @@
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { BsPlusSquare } from 'react-icons/bs';
 import { Button } from 'react-bootstrap';

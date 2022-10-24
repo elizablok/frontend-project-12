@@ -1,3 +1,4 @@
+import React from 'react';
 import { Nav } from 'react-bootstrap';
 import Channel from './Channel';
 import AddChannelButton from './AddChannelButton';

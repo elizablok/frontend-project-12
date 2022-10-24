@@ -1,3 +1,4 @@
+import React from 'react';
 import i18n from 'i18next';
 import leoProfanity from 'leo-profanity';
 import { I18nextProvider, initReactI18next } from 'react-i18next';

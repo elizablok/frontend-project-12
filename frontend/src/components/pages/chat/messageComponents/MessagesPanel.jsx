@@ -1,6 +1,6 @@
+import React, { useEffect } from 'react';
 import { Col } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
 import { animateScroll } from 'react-scroll';
 import ChannelHeader from '../channelComponents/ChannelHeader';
 import MessageForm from './MessageForm';
