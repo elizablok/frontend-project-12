@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import getRoutes from '../../../routes.js';
-import { useAuth } from '../../../contexts/AuthProvider.js';
+import { useAuthn } from '../../../contexts/AuthnProvider.js';
+import notify, { getCodedNotificationMessage } from '../../../notificator';
 
 const getData = async (username, password) => {
   const { token } = await axios
@@ -21,9 +22,9 @@ const getData = async (username, password) => {
 
 const SignInForm = () => {
   const { t } = useTranslation();
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuthnFailed, setIsAuthnFailed] = useState(false);
   const userContainer = useRef(null);
-  const { signIn } = useAuth('');
+  const { signIn } = useAuthn();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -43,16 +44,20 @@ const SignInForm = () => {
         try {
           const token = await getData(values.username, values.password);
           signIn(token);
-          setIsAuth(false);
+          setIsAuthnFailed(false);
           const { from } = location.state || {
             from: { pathname: getRoutes.chatPage() },
           };
           navigate(from);
         } catch (err) {
-          if (err.isAxiosError && err.response.status === 401) {
-            setIsAuth(true);
-            userContainer.current.focus();
-            return;
+          if (err.isAxiosError) {
+            if (err.response.status === 401) {
+              setIsAuthnFailed(true);
+              userContainer.current.focus();
+              return;
+            }
+            const codedMessage = getCodedNotificationMessage(null, 'fetchData', 'error');
+            notify('error', t(codedMessage));
           }
           throw err;
         }
@@ -79,7 +84,7 @@ const SignInForm = () => {
               ref={userContainer}
               onChange={handleChange}
               onBlur={handleBlur}
-              isInvalid={isAuth}
+              isInvalid={isAuthnFailed}
               autoComplete="username"
               placeholder={t('forms.signIn.username')}
               id="username"
@@ -95,7 +100,7 @@ const SignInForm = () => {
               required
               onChange={handleChange}
               onBlur={handleBlur}
-              isInvalid={isAuth}
+              isInvalid={isAuthnFailed}
               autoComplete="password"
               placeholder={t('forms.signIn.password')}
               id="password"
@@ -103,7 +108,7 @@ const SignInForm = () => {
             />
             <Form.Label htmlFor="password">{t('forms.signIn.password')}</Form.Label>
 
-            {isAuth ? (
+            {isAuthnFailed ? (
               <Form.Control.Feedback type="invalid" className="invalid-tooltip">
                 {t('forms.signIn.error')}
               </Form.Control.Feedback>

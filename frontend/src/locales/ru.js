@@ -1,5 +1,24 @@
 export default {
   translation: {
+    notifications: {
+      fetchData: {
+        error: 'Ошибка соединения',
+      },
+      channels: {
+        add: {
+          success: 'Канал создан',
+          error: 'Не удалось создать канал',
+        },
+        rename: {
+          success: 'Канал переименован',
+          error: 'Не удалось переименовать канал',
+        },
+        remove: {
+          success: 'Канал удалён',
+          error: 'Не удалось удалить канал',
+        },
+      },
+    },
     channels: {
       dropdown: {
         rename: 'Переименовать',

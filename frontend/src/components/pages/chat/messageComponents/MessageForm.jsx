@@ -4,15 +4,16 @@ import { useRef, useEffect } from 'react';
 import { ArrowRightSquare } from 'react-bootstrap-icons';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import filter from 'leo-profanity';
 import { useApi } from '../../../../contexts/ApiProvider';
-import { useAuth } from '../../../../contexts/AuthProvider';
+import { useAuthn } from '../../../../contexts/AuthnProvider';
 import { getCurrentChannelId } from '../../../../slices/channelsSlice';
 
 const ChannelForm = () => {
   const { t } = useTranslation();
   const messageRef = useRef(null);
   const { sendMessage } = useApi();
-  const { username } = useAuth().user;
+  const { username } = useAuthn().user;
   const channelId = useSelector(getCurrentChannelId);
 
   useEffect(() => {
@@ -24,7 +25,7 @@ const ChannelForm = () => {
       <Formik
         initialValues={{ body: '' }}
         onSubmit={async ({ body }, { resetForm }) => {
-          sendMessage({ body, channelId, username });
+          sendMessage({ body: filter.clean(body), channelId, username });
           resetForm({});
         }}
       >

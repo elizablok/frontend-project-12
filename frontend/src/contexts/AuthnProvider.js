@@ -2,12 +2,12 @@ import React, {
   useState, useCallback, useMemo, useContext, createContext,
 } from 'react';
 
-const AuthContext = createContext({});
-const useAuth = () => useContext(AuthContext);
+const AuthnContext = createContext({});
+const useAuthn = () => useContext(AuthnContext);
 
-const AuthProvider = ({ children }) => {
+const AuthnProvider = ({ children }) => {
   const savedUserData = JSON.parse(localStorage.getItem('user'));
-  const getAuthHeader = useCallback(() => {
+  const getAuthnHeader = useCallback(() => {
     const userId = savedUserData;
     if (userId && userId.token) {
       return { Authorization: `Bearer ${userId.token}` };
@@ -34,16 +34,16 @@ const AuthProvider = ({ children }) => {
       signIn,
       signOut,
       user,
-      getAuthHeader,
+      getAuthnHeader,
     }),
-    [signIn, signOut, user, getAuthHeader],
+    [signIn, signOut, user, getAuthnHeader],
   );
 
   return (
-    <AuthContext.Provider value={providedData}>{children}</AuthContext.Provider>
+    <AuthnContext.Provider value={providedData}>{children}</AuthnContext.Provider>
   );
 };
 
-export { AuthContext, useAuth };
+export { AuthnContext, useAuthn };
 
-export default AuthProvider;
+export default AuthnProvider;

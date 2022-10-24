@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { useApi } from '../../../contexts/ApiProvider';
 import { getChannels, getChannelById } from '../../../slices/channelsSlice';
+import notify, { getCodedNotificationMessage } from '../../../notificator';
 
 const RenameChannelModal = ({ isShown, entityId, closeHandler }) => {
   const { t } = useTranslation();
@@ -37,8 +38,16 @@ const RenameChannelModal = ({ isShown, entityId, closeHandler }) => {
     },
     validationSchema: validationChannelsSchema(allChannelsNames),
     onSubmit: ({ name }) => {
-      renameChannel({ id: entityId, name });
-      closeHandler();
+      try {
+        renameChannel({ id: entityId, name });
+        closeHandler();
+
+        const codedMessage = getCodedNotificationMessage('channels', 'rename', 'success');
+        notify('success', t(codedMessage));
+      } catch (e) {
+        const codedMessage = getCodedNotificationMessage('channels', 'rename', 'error');
+        notify('error', t(codedMessage));
+      }
     },
   });
 

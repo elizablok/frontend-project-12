@@ -6,13 +6,14 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import getRoutes from '../../../routes';
-import { useAuth } from '../../../contexts/AuthProvider';
+import { useAuthn } from '../../../contexts/AuthnProvider';
+import notify, { getCodedNotificationMessage } from '../../../notificator';
 
 const SignUpForm = () => {
   const { t } = useTranslation();
-  const [isRegistrationFailed, setIsRegistrationFailed] = useState(false);
+  const [isRegistrnFailed, setIsRegistrnFailed] = useState(false);
   const userContainer = useRef(null);
-  const { signIn } = useAuth();
+  const { signIn } = useAuthn();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -53,19 +54,20 @@ const SignUpForm = () => {
         try {
           const tokenData = await getTokenData(username, password);
           signIn(tokenData);
-          setIsRegistrationFailed(false);
+          setIsRegistrnFailed(false);
           const { from } = location.state || {
             from: { pathname: getRoutes.chatPage() },
           };
           navigate(from);
         } catch (err) {
-          console.log(err);
           if (err.isAxiosError) {
             if (err.response.status === 409) {
-              setIsRegistrationFailed(true);
+              setIsRegistrnFailed(true);
               userContainer.current.focus();
               return;
             }
+            const codedMessage = getCodedNotificationMessage(null, 'fetchData', 'error');
+            notify('error', t(codedMessage));
           }
           throw err;
         }
@@ -93,7 +95,7 @@ const SignUpForm = () => {
               ref={userContainer}
               onChange={handleChange}
               onBlur={handleBlur}
-              isInvalid={(!!errors.username || isRegistrationFailed) && touched.username}
+              isInvalid={(!!errors.username || isRegistrnFailed) && touched.username}
               autoComplete="username"
               placeholder={t('forms.signUp.username')}
               value={values.username}
@@ -110,7 +112,7 @@ const SignUpForm = () => {
               required
               onChange={handleChange}
               onBlur={handleBlur}
-              isInvalid={(!!errors.password || isRegistrationFailed) && touched.password}
+              isInvalid={(!!errors.password || isRegistrnFailed) && touched.password}
               autoComplete="password"
               placeholder={t('forms.signUp.password')}
               value={values.password}
@@ -128,7 +130,7 @@ const SignUpForm = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               isInvalid={
-                (!!errors.confirmPassword || isRegistrationFailed) && touched.confirmPassword
+                (!!errors.confirmPassword || isRegistrnFailed) && touched.confirmPassword
               }
               autoComplete="new-password"
               placeholder={t('forms.signUp.passwordsMustMatch')}
@@ -136,7 +138,7 @@ const SignUpForm = () => {
             />
             <Form.Control.Feedback type="invalid" className="invalid-tooltip">
               {
-              isRegistrationFailed
+              isRegistrnFailed
                 ? t('forms.signUp.errors.username.unavailable')
                 : errors.confirmPassword
               }

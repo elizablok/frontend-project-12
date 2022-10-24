@@ -1,11 +1,12 @@
-import { Form, Modal, Button } from 'react-bootstrap';
-import { useFormik } from 'formik';
-import { useTranslation } from 'react-i18next';
 import React, { useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Form, Modal, Button } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
+import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useApi } from '../../../contexts/ApiProvider';
 import { getChannels } from '../../../slices/channelsSlice';
+import notify, { getCodedNotificationMessage } from '../../../notificator';
 
 const AddChannelModal = ({ isShown, closeHandler }) => {
   const { t } = useTranslation();
@@ -15,6 +16,10 @@ const AddChannelModal = ({ isShown, closeHandler }) => {
     .map(({ name }) => name);
 
   const nameRef = useRef(null);
+
+  useEffect(() => {
+    nameRef.current.focus();
+  }, []);
 
   const validationChannelsSchema = (channels) => yup.object().shape({
     name: yup
@@ -26,18 +31,22 @@ const AddChannelModal = ({ isShown, closeHandler }) => {
       .notOneOf(channels, 'duplicate'),
   });
 
-  useEffect(() => {
-    nameRef.current.focus();
-  }, []);
-
   const formik = useFormik({
     initialValues: {
       name: '',
     },
     validationSchema: validationChannelsSchema(allChannelsNames),
     onSubmit: ({ name }) => {
-      createChannel({ name });
-      closeHandler();
+      try {
+        createChannel({ name });
+        closeHandler();
+
+        const codedMessage = getCodedNotificationMessage('channels', 'add', 'success');
+        notify('success', t(codedMessage));
+      } catch (e) {
+        const codedMessage = getCodedNotificationMessage('channels', 'add', 'error');
+        notify('error', t(codedMessage));
+      }
     },
   });
 

@@ -1,9 +1,9 @@
 import { Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../contexts/AuthProvider';
+import { useAuthn } from '../contexts/AuthnProvider';
 
-const AuthButton = () => {
-  const { user, signOut } = useAuth();
+const AuthnButton = () => {
+  const { user, signOut } = useAuthn();
   const { t } = useTranslation();
 
   if (user) {
@@ -12,4 +12,4 @@ const AuthButton = () => {
   return null;
 };
 
-export default AuthButton;
+export default AuthnButton;

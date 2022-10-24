@@ -1,13 +1,13 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthProvider';
+import { useAuthn } from '../contexts/AuthnProvider';
 import getRoutes from '../routes';
 
-const RequireAuth = ({ children }) => {
-  const { user } = useAuth();
+const RequireAuthn = ({ children }) => {
+  const { user } = useAuthn();
 
   return (
     user ? children : <Navigate to={getRoutes.signInPagePath()} />
   );
 };
 
-export default RequireAuth;
+export default RequireAuthn;

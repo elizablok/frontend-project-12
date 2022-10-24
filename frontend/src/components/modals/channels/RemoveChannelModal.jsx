@@ -1,14 +1,23 @@
 import { Modal, Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useApi } from '../../../contexts/ApiProvider';
+import notify, { getCodedNotificationMessage } from '../../../notificator';
 
 const RemoveChannelModal = ({ isShown, entityId, closeHandler }) => {
   const { t } = useTranslation();
   const { removeChannel } = useApi();
 
   const handleRemove = () => {
-    removeChannel({ id: entityId });
-    closeHandler();
+    try {
+      removeChannel({ id: entityId });
+      closeHandler();
+
+      const codedMessage = getCodedNotificationMessage('channels', 'remove', 'success');
+      notify('success', t(codedMessage));
+    } catch (e) {
+      const codedMessage = getCodedNotificationMessage('channels', 'remove', 'error');
+      notify('error', t(codedMessage));
+    }
   };
 
   return (
