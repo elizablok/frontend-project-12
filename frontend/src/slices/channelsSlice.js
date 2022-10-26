@@ -48,7 +48,7 @@ const channelsSlice = createSlice({
         state: mappingLoadingState.done,
         error: null,
       };
-      state.loading = loading;
+      state.loading = loading; // eslint-disable-line no-eval
     }).addCase(fetchData.rejected, (state, { error }) => {
       const loading = {
         state: mappingLoadingState.failed,
