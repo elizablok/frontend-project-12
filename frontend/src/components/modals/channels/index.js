@@ -1,11 +1,11 @@
-import AddChannelModal from './AddChannelModal';
-import RemoveChannelModal from './RemoveChannelModal';
-import RenameChannelModal from './RenameChannelModal';
+import Add from './Add';
+import Remove from './Remove';
+import Rename from './Rename';
 
 const channelModals = {
-  add: AddChannelModal,
-  remove: RemoveChannelModal,
-  rename: RenameChannelModal,
+  add: Add,
+  remove: Remove,
+  rename: Rename,
 };
 
 const getChannelModal = (type) => channelModals[type];

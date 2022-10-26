@@ -5,15 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useApi } from '../../../contexts/ApiProvider';
-import { getChannels } from '../../../slices/channelsSlice';
+import { channelsSelectors } from '../../../slices/channelsSlice';
 import notify, { getCodedNotificationMessage } from '../../../notificator';
 
-const AddChannelModal = ({ isShown, closeHandler }) => {
+const Add = ({ isShown, closeHandler }) => {
   const { t } = useTranslation();
   const { createChannel } = useApi();
 
-  const allChannelsNames = useSelector(getChannels)
-    .map(({ name }) => name);
+  const allChannelsNames = useSelector(channelsSelectors.selectNames);
 
   const nameRef = useRef(null);
 
@@ -89,4 +88,4 @@ const AddChannelModal = ({ isShown, closeHandler }) => {
   );
 };
 
-export default AddChannelModal;
+export default Add;

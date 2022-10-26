@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 import ChannelsPanel from './channelComponents/ChannelsPanel';
 import MessagesPanel from './messageComponents/MessagesPanel';
 import {
-  fetchData, getChannels, getChannelById, getCurrentChannelId,
-  getLoading, getError,
+  fetchData, channelsSelectors,
 } from '../../../slices/channelsSlice';
 import { useAuthn } from '../../../contexts/AuthnProvider';
 import LoadingErrorButton from './LoadingErrorButton';
 import LoadSpinner from './LoadSpinner';
 import notify, { getCodedNotificationMessage } from '../../../notificator';
+import mappingLoadingState from '../../../mappingStates';
 
 const Chat = () => {
   const { getAuthnHeader } = useAuthn();
@@ -31,13 +31,16 @@ const Chat = () => {
     handleLoading();
   }, [handleLoading]);
 
-  const channels = useSelector((state) => getChannels(state));
-  const currentChannelId = useSelector(getCurrentChannelId);
-  const currentChannel = useSelector((state) => getChannelById(state, currentChannelId));
+  const channels = useSelector(channelsSelectors.selectAll);
+  const currentChannelId = useSelector(channelsSelectors.selectCurrentId);
+  const currentChannel = useSelector(
+    (state) => channelsSelectors.selectById(state, currentChannelId),
+  );
 
-  const loading = useSelector(getLoading);
-  const isLoading = () => loading;
-  const loadingError = useSelector(getError);
+  const loadingState = useSelector(channelsSelectors.selectLoadingState);
+  const loadingError = useSelector(channelsSelectors.selectLoadingError);
+
+  const isLoading = () => loadingState === mappingLoadingState.pending;
 
   return (
     isLoading() ? <LoadSpinner /> : (

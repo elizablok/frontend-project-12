@@ -1,7 +1,7 @@
 import React, {
   useContext, createContext, useMemo,
 } from 'react';
-import { setCurrentChannel } from '../slices/channelsSlice';
+import { channelsActions } from '../slices/channelsSlice';
 import store from '../slices/index';
 
 const ApiContext = createContext({});
@@ -17,7 +17,8 @@ const ApiProvider = ({ socket, children }) => {
     },
     removeChannel: (payload) => {
       socket.emit('removeChannel', payload, (response) => {
-        store.dispatch(setCurrentChannel(1));
+        const DEFAULT_CHANNEL_ID = 1;
+        store.dispatch(channelsActions.setCurrent(DEFAULT_CHANNEL_ID));
 
         return response.data;
       });

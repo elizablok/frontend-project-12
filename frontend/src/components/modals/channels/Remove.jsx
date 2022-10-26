@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useApi } from '../../../contexts/ApiProvider';
 import notify, { getCodedNotificationMessage } from '../../../notificator';
 
-const RemoveChannelModal = ({ isShown, entityId, closeHandler }) => {
+const Remove = ({ isShown, entityId, closeHandler }) => {
   const { t } = useTranslation();
   const { removeChannel } = useApi();
 
@@ -39,4 +39,4 @@ const RemoveChannelModal = ({ isShown, entityId, closeHandler }) => {
   );
 };
 
-export default RemoveChannelModal;
+export default Remove;

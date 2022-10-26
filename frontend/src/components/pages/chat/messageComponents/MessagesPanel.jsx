@@ -5,10 +5,10 @@ import { animateScroll } from 'react-scroll';
 import ChannelHeader from '../channelComponents/ChannelHeader';
 import MessageForm from './MessageForm';
 import Message from './Message';
-import { getMessages } from '../../../../slices/messagesSlice';
+import { messagesSelectors } from '../../../../slices/messagesSlice';
 
 const MessagesPanel = ({ channel }) => {
-  const messages = useSelector(getMessages);
+  const messages = useSelector(messagesSelectors.selectAll);
   const channelMessages = messages.filter((message) => message.channelId === channel.id);
 
   useEffect(() => {

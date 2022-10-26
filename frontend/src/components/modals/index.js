@@ -1,11 +1,9 @@
 import getChannelModal from './channels/index';
 
 const mappingModal = {
-  channel: (type) => getChannelModal(type),
+  channel: (action) => getChannelModal(action),
 };
 
-const getModal = (isOpen, entity, type) => (isOpen
-  && mappingModal[entity](type)
-);
+const getModal = (isOpen, entity, action) => (isOpen && mappingModal[entity](action));
 
 export default getModal;

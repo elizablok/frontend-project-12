@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  setCurrentChannel, getCurrentChannelId,
+  channelsActions, channelsSelectors,
 } from '../../../../slices/channelsSlice';
 import ChannelButton from './ChannelButton';
 import ChannelDropdown from './ChannelDropdown';
@@ -10,7 +10,7 @@ import { openModal } from '../../../../slices/modalsSlice';
 const Channel = ({ id, name }) => {
   const dispatch = useDispatch();
 
-  const currentChannelId = useSelector(getCurrentChannelId);
+  const currentChannelId = useSelector(channelsSelectors.selectCurrentId);
   const variant = id === currentChannelId ? 'secondary' : 'light';
 
   const basicClassName = 'w-100 rounded-0 text-start';
@@ -19,15 +19,15 @@ const Channel = ({ id, name }) => {
   const className = isInitialChannel(id) ? basicClassName : `${basicClassName} text-truncate`;
 
   const changeActiveChannel = () => {
-    dispatch(setCurrentChannel(id));
+    dispatch(channelsActions.setCurrent(id));
   };
 
   const handleRename = () => {
-    dispatch(openModal({ entity: 'channel', type: 'rename', id }));
+    dispatch(openModal({ type: 'rename channel', data: { id } }));
   };
 
   const handleRemove = () => {
-    dispatch(openModal({ entity: 'channel', type: 'remove', id }));
+    dispatch(openModal({ type: 'remove channel', data: { id } }));
   };
 
   const channelButton = (

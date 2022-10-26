@@ -1,6 +1,7 @@
 import { createSlice, createEntityAdapter, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import getRoutes from '../routes';
+import mappingLoadingState from '../mappingStates';
 
 export const fetchData = createAsyncThunk(
   'channels/fetchChannels',
@@ -15,71 +16,61 @@ export const fetchData = createAsyncThunk(
 const channelsAdapter = createEntityAdapter();
 const initialState = channelsAdapter.getInitialState({
   currentChannelId: 1,
-  isLoading: true,
-  loadingError: null,
+  loading: {
+    state: mappingLoadingState.initial,
+    error: null,
+  },
 });
 
 const channelsSlice = createSlice({
   name: 'channels',
   initialState,
   reducers: {
-    setCurrentChannel(state, { payload }) {
+    setCurrent(state, { payload }) {
       const currentChannelId = payload;
       return { ...state, currentChannelId };
     },
-    addChannel: channelsAdapter.addOne,
-    deleteChannel: channelsAdapter.removeOne,
-    changeChannel: channelsAdapter.updateOne,
+    add: channelsAdapter.addOne,
+    remove: channelsAdapter.removeOne,
+    update: channelsAdapter.updateOne,
   },
   extraReducers: (builder) => {
     builder.addCase(fetchData.pending, (state) => {
-      const isLoading = true;
-      const loadingError = null;
-      return { ...state, isLoading, loadingError };
+      const loading = {
+        state: mappingLoadingState.pending,
+        error: null,
+      };
+      return { ...state, loading };
     }).addCase(fetchData.fulfilled, (state, { payload }) => {
       const { channels } = payload;
-      const ids = channels.map(({ id }) => id);
-      const entries = channels.map(({ id, name, removable }) => [id, { id, name, removable }]);
-      const entities = Object.fromEntries(entries);
-      const isLoading = false;
-      const loadingError = null;
-      return {
-        ...state, ids, entities, isLoading, loadingError,
+      channelsAdapter.setAll(state, channels);
+      const loading = {
+        state: mappingLoadingState.done,
+        error: null,
       };
+      state.loading = loading;
     }).addCase(fetchData.rejected, (state, { error }) => {
-      const isLoading = false;
-      const loadingError = error;
-      return { ...state, isLoading, loadingError };
+      const loading = {
+        state: mappingLoadingState.failed,
+        error,
+      };
+      return { ...state, loading };
     });
   },
 });
 
 const selectors = channelsAdapter.getSelectors((state) => state.channels);
 
-const getChannels = (state) => selectors.selectAll(state);
-const getCurrentChannelId = (state) => state.channels.currentChannelId;
-const getChannelById = (state, id) => selectors.selectById(state, id);
-const getChannelsName = (state) => getChannels(state).map((channel) => channel.name);
+export const channelsSelectors = {
+  ...selectors,
+  selectCurrentId: (state) => state.channels.currentChannelId,
+  selectNames: (state) => selectors.selectAll(state).map((channel) => channel.name),
+  selectLoadingState: (state) => state.channels.loading.state,
+  selectLoadingError: (state) => state.channels.loading.error,
+};
 
-const getLoading = (state) => state.channels.isLoading;
-const getError = (state) => state.channels.loadingError;
-
-export const {
-  setChannels,
-  setCurrentChannel,
-  addChannel,
-  deleteChannel,
-  changeChannel,
-} = channelsSlice.actions;
-
-export {
-  selectors,
-  getChannels,
-  getCurrentChannelId,
-  getChannelById,
-  getChannelsName,
-  getLoading,
-  getError,
+export const channelsActions = {
+  ...channelsSlice.actions,
 };
 
 export default channelsSlice.reducer;

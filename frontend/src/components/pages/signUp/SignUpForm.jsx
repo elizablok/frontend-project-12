@@ -17,7 +17,7 @@ const SignUpForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const getTokenData = async (username, password) => {
+  const registerUser = async (username, password) => {
     const { token } = await axios
       .post(getRoutes.signUpPath(), {
         username,
@@ -52,9 +52,9 @@ const SignUpForm = () => {
       initialValues={{ username: '', password: '', confirmPassword: '' }}
       onSubmit={async ({ username, password }) => {
         try {
-          const tokenData = await getTokenData(username, password);
-          signIn(tokenData);
+          const tokenData = await registerUser(username, password);
           setIsRegistrnFailed(false);
+          signIn(tokenData);
           const { from } = location.state || {
             from: { pathname: getRoutes.chatPage() },
           };

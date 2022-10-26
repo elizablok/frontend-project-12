@@ -5,18 +5,18 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import * as yup from 'yup';
 import { useApi } from '../../../contexts/ApiProvider';
-import { getChannels, getChannelById } from '../../../slices/channelsSlice';
+import { channelsSelectors } from '../../../slices/channelsSlice';
 import notify, { getCodedNotificationMessage } from '../../../notificator';
 
-const RenameChannelModal = ({ isShown, entityId, closeHandler }) => {
+const Rename = ({ isShown, entityId, closeHandler }) => {
   const { t } = useTranslation();
   const { renameChannel } = useApi();
 
-  const allChannelsNames = useSelector(getChannels)
+  const allChannelsNames = useSelector(channelsSelectors.selectNames)
     .map(({ name }) => name);
 
   const nameRef = useRef(null);
-  const channelName = useSelector((state) => getChannelById(state, entityId).name);
+  const channelName = useSelector((state) => channelsSelectors.selectById(state, entityId).name);
 
   const validationChannelsSchema = (channels) => yup.object().shape({
     name: yup
@@ -90,4 +90,4 @@ const RenameChannelModal = ({ isShown, entityId, closeHandler }) => {
   );
 };
 
-export default RenameChannelModal;
+export default Rename;

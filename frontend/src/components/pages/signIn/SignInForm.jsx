@@ -10,7 +10,7 @@ import getRoutes from '../../../routes.js';
 import { useAuthn } from '../../../contexts/AuthnProvider.js';
 import notify, { getCodedNotificationMessage } from '../../../notificator';
 
-const getData = async (username, password) => {
+const logInUser = async (username, password) => {
   const { token } = await axios
     .post(getRoutes.signInPath(), {
       username,
@@ -42,8 +42,8 @@ const SignInForm = () => {
       validateOnBlur
       onSubmit={async (values) => {
         try {
-          const token = await getData(values.username, values.password);
-          signIn(token);
+          const tokenData = await logInUser(values.username, values.password);
+          signIn(tokenData);
           setIsAuthnFailed(false);
           const { from } = location.state || {
             from: { pathname: getRoutes.chatPage() },

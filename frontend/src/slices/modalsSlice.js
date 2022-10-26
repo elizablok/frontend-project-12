@@ -1,45 +1,34 @@
-import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-const modalsAdapter = createEntityAdapter();
-const initialState = modalsAdapter.getInitialState({
-  isOpen: false,
-  entity: null,
+const initialState = {
   type: null,
-  id: null,
-});
+  data: {},
+};
 
 const modalsSlice = createSlice({
   name: 'modals',
   initialState,
   reducers: {
     openModal: (state, { payload }) => {
-      const { type, entity, id } = payload;
-      const isOpen = true;
+      const { type, data } = payload;
       return {
-        ...state, isOpen, entity, type, id: id ?? null,
+        ...state, type, data: data ?? {},
       };
     },
-    closeModal: (state) => {
-      const isOpen = false;
-      const entity = null;
-      const type = null;
-      const id = null;
-      return {
-        ...state, isOpen, entity, type, id,
-      };
-    },
+    closeModal: (state) => ({
+      ...state, type: null, data: {},
+    }),
   },
 });
 
 export const { openModal, closeModal } = modalsSlice.actions;
 
-const getModalState = (state) => ({
-  isOpen: state.modals.isOpen,
-  entity: state.modals.entity,
-  type: state.modals.type,
-  id: state.modals.id,
-});
-
-export { getModalState };
+export const modalsSelectors = {
+  selectTypeAndData: (state) => ({
+    type: state.modals.type,
+    data: state.modals.data,
+  }),
+  isOpen: (state) => !!state.modals.type,
+};
 
 export default modalsSlice.reducer;

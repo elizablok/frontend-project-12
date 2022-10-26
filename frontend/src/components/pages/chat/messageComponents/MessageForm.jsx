@@ -7,14 +7,14 @@ import { Formik } from 'formik';
 import filter from 'leo-profanity';
 import { useApi } from '../../../../contexts/ApiProvider';
 import { useAuthn } from '../../../../contexts/AuthnProvider';
-import { getCurrentChannelId } from '../../../../slices/channelsSlice';
+import { channelsSelectors } from '../../../../slices/channelsSlice';
 
 const ChannelForm = () => {
   const { t } = useTranslation();
   const messageRef = useRef(null);
   const { sendMessage } = useApi();
   const { username } = useAuthn().user;
-  const channelId = useSelector(getCurrentChannelId);
+  const channelId = useSelector(channelsSelectors.selectCurrentId);
 
   useEffect(() => {
     messageRef.current.focus();

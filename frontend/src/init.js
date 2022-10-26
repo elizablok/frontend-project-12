@@ -7,10 +7,8 @@ import { ErrorBoundary, Provider as RollbarProvider } from '@rollbar/react';
 import App from './App';
 import resources from './locales/index.js';
 import store from './slices/index';
-import { addMessage } from './slices/messagesSlice';
-import {
-  addChannel, deleteChannel, changeChannel, setCurrentChannel,
-} from './slices/channelsSlice';
+import { messagesActions } from './slices/messagesSlice';
+import { channelsActions } from './slices/channelsSlice';
 import AuthnProvider from './contexts/AuthnProvider';
 import ApiProvider from './contexts/ApiProvider';
 
@@ -29,17 +27,16 @@ const init = async (socket) => {
   leoProfanity.add(lngDict);
 
   socket.on('newMessage', (payload) => {
-    store.dispatch(addMessage(payload));
+    store.dispatch(messagesActions.add(payload));
   });
   socket.on('newChannel', ({ id, name }) => {
-    store.dispatch(addChannel({ id, name }));
-    store.dispatch(setCurrentChannel(id));
+    store.dispatch(channelsActions.add({ id, name }));
   });
   socket.on('removeChannel', (payload) => {
-    store.dispatch(deleteChannel(payload.id));
+    store.dispatch(channelsActions.remove(payload.id));
   });
   socket.on('renameChannel', ({ id, name }) => {
-    store.dispatch(changeChannel({ id, changes: { name } }));
+    store.dispatch(channelsActions.update({ id, changes: { name } }));
   });
 
   await i18n

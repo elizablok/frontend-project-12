@@ -10,7 +10,7 @@ const AddChannelButton = () => {
   const dispatch = useDispatch();
 
   const openChannelForm = () => {
-    dispatch(openModal({ entity: 'channel', type: 'add' }));
+    dispatch(openModal({ type: 'add channel' }));
   };
 
   return (
