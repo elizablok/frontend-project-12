@@ -27,8 +27,10 @@ const channelsSlice = createSlice({
   initialState,
   reducers: {
     setCurrent(state, { payload }) {
-      const currentChannelId = payload;
-      return { ...state, currentChannelId };
+      return { ...state, currentChannelId: payload };
+    },
+    setLoading(state, { payload }) {
+      return { ...state, loading: payload };
     },
     add: channelsAdapter.addOne,
     remove: channelsAdapter.removeOne,
@@ -67,6 +69,7 @@ export const channelsSelectors = {
   selectNames: (state) => selectors.selectAll(state).map((channel) => channel.name),
   selectLoadingState: (state) => state.channels.loading.state,
   selectLoadingError: (state) => state.channels.loading.error,
+  isLoading: (state) => state.channels.loading.state === mappingLoadingState.pending,
 };
 
 export const channelsActions = {

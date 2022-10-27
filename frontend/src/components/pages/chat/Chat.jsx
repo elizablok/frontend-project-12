@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import ChannelsPanel from './channelComponents/ChannelsPanel';
 import MessagesPanel from './messageComponents/MessagesPanel';
 import {
-  fetchData, channelsSelectors,
+  fetchData, channelsSelectors, channelsActions,
 } from '../../../slices/channelsSlice';
 import { useAuthn } from '../../../contexts/AuthnProvider';
 import LoadingErrorButton from './LoadingErrorButton';
@@ -37,13 +37,17 @@ const Chat = () => {
     (state) => channelsSelectors.selectById(state, currentChannelId),
   );
 
-  const loadingState = useSelector(channelsSelectors.selectLoadingState);
   const loadingError = useSelector(channelsSelectors.selectLoadingError);
+  const isLoading = useSelector(channelsSelectors.isLoading);
 
-  const isLoading = () => loadingState === mappingLoadingState.pending;
+  if (currentChannel && isLoading) {
+    dispatch(
+      channelsActions.setLoading({ state: mappingLoadingState.done, error: null }),
+    );
+  }
 
   return (
-    isLoading() ? <LoadSpinner /> : (
+    isLoading ? <LoadSpinner /> : (
       <Container className="h-100 my-4 overflow-hidden rounded shadow">
         <Row className="h-100 bg-white flex-md-row">
           { loadingError ? (

@@ -31,12 +31,9 @@ const init = async (socket) => {
   });
   socket.on('newChannel', ({ id, name }) => {
     store.dispatch(channelsActions.add({ id, name }));
-    store.dispatch(channelsActions.setCurrent(id));
   });
   socket.on('removeChannel', (payload) => {
     store.dispatch(channelsActions.remove(payload.id));
-    const DEFAULT_CHANNEL_ID = 1;
-    store.dispatch(channelsActions.setCurrent(DEFAULT_CHANNEL_ID));
   });
   socket.on('renameChannel', ({ id, name }) => {
     store.dispatch(channelsActions.update({ id, changes: { name } }));
