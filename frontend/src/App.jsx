@@ -4,24 +4,27 @@ import {
   Routes,
   Route,
   Link,
+  Navigate,
 } from 'react-router-dom';
 import {
   Navbar,
   Container,
+  Button,
 } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { ToastContainer } from 'react-toastify';
-import SignIn from './components/pages/signIn/SignIn';
-import SignUp from './components/pages/signUp/SignUp';
-import MissingPage from './components/pages/404';
-import Chat from './components/pages/chat/Chat';
-import getRoutes from './routes';
-import AuthnButton from './components/AuthnButton';
-import RequireAuthn from './components/RequireAuthn';
 import 'react-toastify/scss/main.scss';
+
+import { useAuthn } from './contexts/AuthnProvider';
+import SignIn from './components/signIn/SignIn';
+import SignUp from './components/signUp/SignUp';
+import MissingPage from './components/404';
+import Chat from './components/Chat';
+import getRoutes from './routes';
 
 const App = () => {
   const { t } = useTranslation();
+  const { user, signOut } = useAuthn();
 
   return (
     <div className="d-flex flex-column h-100">
@@ -31,7 +34,9 @@ const App = () => {
             <Navbar.Brand as={Link} to={getRoutes.chatPage()} className="text-warning">
               {t('chat.logo')}
             </Navbar.Brand>
-            <AuthnButton />
+            {
+              user && <Button variant="warning" onClick={signOut}>{t('signOut')}</Button>
+            }
           </Container>
         </Navbar>
         <Routes>
@@ -39,9 +44,7 @@ const App = () => {
             exact
             path={getRoutes.chatPage()}
             element={(
-              <RequireAuthn>
-                <Chat />
-              </RequireAuthn>
+              user ? <Chat /> : <Navigate to={getRoutes.signInPagePath()} />
             )}
           />
           <Route path={getRoutes.signInPagePath()} element={<SignIn />} />

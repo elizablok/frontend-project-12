@@ -2,12 +2,14 @@ import React, { useEffect } from 'react';
 import { Col } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { animateScroll } from 'react-scroll';
-import ChannelHeader from '../channelComponents/ChannelHeader';
+import { useTranslation } from 'react-i18next';
+
 import MessageForm from './MessageForm';
 import Message from './Message';
-import { messagesSelectors } from '../../../../slices/messagesSlice';
+import { messagesSelectors } from '../../slices/messagesSlice';
 
 const MessagesPanel = ({ channel }) => {
+  const { t } = useTranslation();
   const messages = useSelector(messagesSelectors.selectAll);
   const channelMessages = messages.filter((message) => message.channelId === channel.id);
 
@@ -21,7 +23,18 @@ const MessagesPanel = ({ channel }) => {
   return (
     <Col className="p-0 h-100">
       <div className="d-flex flex-column h-100">
-        <ChannelHeader name={channel.name} messagesNumber={channelMessages.length} />
+        <div className="bg-light mb-4 p-3 shadow-sm small">
+          <p className="m-0">
+            <b>
+              #
+              {' '}
+              {channel.name}
+            </b>
+          </p>
+          <span className="text-muted">
+            {`${channelMessages.length} ${t('chat.messages')}`}
+          </span>
+        </div>
         <div id="messages-box" className="chat-messages overflow-auto px-5 h-100">
           {channelMessages && channelMessages.map(({ id, username, body }) => (
             <Message key={id} username={username} body={body} />

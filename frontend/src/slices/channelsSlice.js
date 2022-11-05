@@ -1,16 +1,18 @@
 import { createSlice, createEntityAdapter, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+
 import getRoutes from '../routes';
 import mappingLoadingState from '../mappingStates';
 
 export const fetchData = createAsyncThunk(
   'channels/fetchChannels',
-  async (payload) => {
-    const { data } = await axios.get(getRoutes.dataPath(), {
-      headers: payload,
-    });
-    return data;
-  },
+  (payload) => axios.get(getRoutes.dataPath(), {
+    headers: payload,
+  })
+    .then((res) => res.data)
+    .catch((e) => {
+      throw e;
+    }),
 );
 
 const channelsAdapter = createEntityAdapter();
@@ -56,6 +58,7 @@ const channelsSlice = createSlice({
         state: mappingLoadingState.failed,
         error,
       };
+
       return { ...state, loading };
     });
   },

@@ -1,33 +1,59 @@
-import React, { useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import React, {
+  useRef, useEffect, useState, useCallback,
+} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Form, Modal, Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+
 import { useApi } from '../../../contexts/ApiProvider';
-import { channelsSelectors } from '../../../slices/channelsSlice';
+import { channelsActions, channelsSelectors } from '../../../slices/channelsSlice';
 import notify, { getCodedNotificationMessage } from '../../../notificator';
+import LoadSpinner from '../../LoadSpinner';
 
 const Add = ({ isShown, closeHandler }) => {
-  const { t } = useTranslation();
-  const { createChannel } = useApi();
-
   const allChannelsNames = useSelector(channelsSelectors.selectNames);
+  const channelsIds = useSelector(channelsSelectors.selectIds);
+
+  const [loading, setLoading] = useState({ state: null, id: null });
+  const addedChannelId = loading.id;
+  const isLoading = loading.state === 'pending';
+  const isAdded = channelsIds.includes(addedChannelId);
 
   const nameRef = useRef(null);
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const { createChannel } = useApi();
+
+  const handleLoading = useCallback(() => {
+    if (isLoading && isAdded(addedChannelId)) {
+      setLoading({ state: 'done', id: null });
+      dispatch(channelsActions.setCurrent(addedChannelId));
+    }
+  }, [addedChannelId, dispatch, isAdded, isLoading]);
+
+  const handleFocus = useCallback(() => {
+    if (loading.state === null) {
+      nameRef.current.focus();
+    }
+  }, [loading.state]);
 
   useEffect(() => {
-    nameRef.current.focus();
-  }, []);
+    handleFocus();
+    handleLoading();
+  }, [handleFocus, handleLoading]);
+
+  const getFormError = (key) => `modals.channels.add.form.errors.${key}`;
 
   const validationChannelsSchema = (channels) => yup.object().shape({
     name: yup
       .string()
       .trim()
-      .required('required')
-      .min(3, 'channelNameLenght')
-      .max(20, 'channelNameLenght')
-      .notOneOf(channels, 'duplicate'),
+      .required(getFormError('required'))
+      .min(3, getFormError('min'))
+      .max(20, getFormError('max'))
+      .notOneOf(channels, getFormError('notOneOf')),
   });
 
   const formik = useFormik({
@@ -35,22 +61,26 @@ const Add = ({ isShown, closeHandler }) => {
       name: '',
     },
     validationSchema: validationChannelsSchema(allChannelsNames),
-    onSubmit: ({ name }) => {
-      try {
-        createChannel({ name });
-        closeHandler();
-
+    onSubmit: ({ name }) => createChannel({ name })
+      .then((channel) => {
         const codedMessage = getCodedNotificationMessage('channels', 'add', 'success');
+
+        setLoading({ state: 'pending', id: channel.id });
+
+        closeHandler();
         notify('success', t(codedMessage));
-      } catch (e) {
+      })
+      .catch(() => {
         const codedMessage = getCodedNotificationMessage('channels', 'add', 'error');
+
+        setLoading({ state: 'failed', id: null });
+
         notify('error', t(codedMessage));
-      }
-    },
+      }),
   });
 
   const {
-    values, errors, handleChange, handleSubmit, isSubmitting, dirty,
+    values, errors, handleChange, handleSubmit, isSubmitting, dirty, isValid,
   } = formik;
 
   return (
@@ -59,29 +89,31 @@ const Add = ({ isShown, closeHandler }) => {
         <Modal.Title>{t('modals.channels.add.title')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label className="visually-hidden" htmlFor="name">{t('modals.channels.label')}</Form.Label>
-            <Form.Control
-              type="text"
-              ref={nameRef}
-              id="name"
-              name="name"
-              value={values.name}
-              required
-              disabled={isSubmitting}
-              isInvalid={errors.name}
-              onChange={handleChange}
-            />
-            <Form.Control.Feedback>{errors.name}</Form.Control.Feedback>
-          </Form.Group>
-          <Button variant="secondary" onClick={closeHandler}>
-            {t('modals.cancel')}
-          </Button>
-          <Button variant="primary" type="submit" disabled={isSubmitting || !dirty}>
-            {t('modals.submit')}
-          </Button>
-        </Form>
+        {isSubmitting ? <LoadSpinner /> : (
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label className="visually-hidden" htmlFor="name">{t('modals.channels.label')}</Form.Label>
+              <Form.Control
+                type="text"
+                ref={nameRef}
+                id="name"
+                name="name"
+                value={values.name}
+                required
+                disabled={isSubmitting}
+                isInvalid={!isValid}
+                onChange={handleChange}
+              />
+              <Form.Control.Feedback type="invalid">{t(errors.name)}</Form.Control.Feedback>
+            </Form.Group>
+            <Button variant="secondary" onClick={closeHandler}>
+              {t('modals.cancel')}
+            </Button>
+            <Button variant="primary" type="submit" disabled={isSubmitting || !dirty || !isValid}>
+              {t('modals.submit')}
+            </Button>
+          </Form>
+        )}
       </Modal.Body>
       <Modal.Footer />
     </Modal>

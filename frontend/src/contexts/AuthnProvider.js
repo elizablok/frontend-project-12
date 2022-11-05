@@ -7,6 +7,7 @@ const useAuthn = () => useContext(AuthnContext);
 
 const AuthnProvider = ({ children }) => {
   const savedUserData = JSON.parse(localStorage.getItem('user'));
+
   const getAuthnHeader = useCallback(() => {
     const userId = savedUserData;
     if (userId && userId.token) {
@@ -19,6 +20,7 @@ const AuthnProvider = ({ children }) => {
   const [user, setUser] = useState(
     savedUserData ? { username: savedUserData.username } : null,
   );
+
   const signIn = useCallback((userData) => {
     localStorage.setItem('user', JSON.stringify(userData));
     setUser({ username: userData.username });

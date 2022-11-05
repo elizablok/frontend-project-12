@@ -26,18 +26,22 @@ const init = async (socket) => {
   const lngDict = leoProfanity.getDictionary(lng);
   leoProfanity.add(lngDict);
 
-  socket.on('newMessage', (payload) => {
-    store.dispatch(messagesActions.add(payload));
-  });
-  socket.on('newChannel', ({ id, name }) => {
-    store.dispatch(channelsActions.add({ id, name }));
-  });
-  socket.on('removeChannel', (payload) => {
-    store.dispatch(channelsActions.remove(payload.id));
-  });
-  socket.on('renameChannel', ({ id, name }) => {
-    store.dispatch(channelsActions.update({ id, changes: { name } }));
-  });
+  socket.on(
+    'newMessage',
+    (payload) => store.dispatch(messagesActions.add(payload)),
+  );
+  socket.on(
+    'newChannel',
+    (payload) => store.dispatch(channelsActions.add(payload)),
+  );
+  socket.on(
+    'removeChannel',
+    (payload) => store.dispatch(channelsActions.remove(payload.id)),
+  );
+  socket.on(
+    'renameChannel',
+    ({ id, name }) => store.dispatch(channelsActions.update({ id, changes: { name } })),
+  );
 
   await i18n
     .use(initReactI18next)

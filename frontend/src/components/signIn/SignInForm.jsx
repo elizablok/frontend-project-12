@@ -6,9 +6,9 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import getRoutes from '../../../routes.js';
-import { useAuthn } from '../../../contexts/AuthnProvider.js';
-import notify, { getCodedNotificationMessage } from '../../../notificator';
+import getRoutes from '../../routes';
+import { useAuthn } from '../../contexts/AuthnProvider';
+import notify, { getCodedNotificationMessage } from '../../notificator';
 
 const logInUser = async (username, password) => {
   const { token } = await axios

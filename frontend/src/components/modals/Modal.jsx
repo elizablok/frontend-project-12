@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { modalsSelectors, closeModal } from '../../slices/modalsSlice';
+
+import { modalsActions, modalsSelectors } from '../../slices/modalsSlice';
 import getModal from './index';
 
 const Modal = () => {
@@ -10,7 +11,7 @@ const Modal = () => {
   const dispatch = useDispatch();
 
   const handleClose = () => {
-    dispatch(closeModal());
+    dispatch(modalsActions.close());
   };
 
   const isOpen = useSelector(modalsSelectors.isOpen);

@@ -5,9 +5,10 @@ import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import getRoutes from '../../../routes';
-import { useAuthn } from '../../../contexts/AuthnProvider';
-import notify, { getCodedNotificationMessage } from '../../../notificator';
+
+import getRoutes from '../../routes';
+import { useAuthn } from '../../contexts/AuthnProvider';
+import notify, { getCodedNotificationMessage } from '../../notificator';
 
 const SignUpForm = () => {
   const { t } = useTranslation();

@@ -1,10 +1,6 @@
 import React, {
   useContext, createContext, useMemo,
 } from 'react';
-import { useSelector } from 'react-redux';
-import store from '../slices/index';
-import { channelsActions, channelsSelectors } from '../slices/channelsSlice';
-import mappingLoadingState from '../mappingStates';
 
 const ApiContext = createContext({});
 const useApi = () => useContext(ApiContext);
@@ -16,33 +12,15 @@ const wrapSocket = (socketFunc) => (...args) => new Promise((resolve, reject) =>
     }
     reject();
   });
-})
-  .then((channel) => {
-    store.dispatch(
-      channelsActions.setLoading({ state: mappingLoadingState.pending, error: null }),
-    );
-    store.dispatch(channelsActions.setCurrent(channel.id));
-  })
-  .catch((error) => {
-    store.dispatch(
-      channelsActions.setLoading({ state: mappingLoadingState.failed, error }),
-    );
-  });
+});
 
 const ApiProvider = ({ socket, children }) => {
-  const currentChannelId = useSelector(channelsSelectors.selectCurrentId);
   const socketApi = useMemo(() => ({
-    sendMessage: (payload) => socket.emit('newMessage', payload),
+    sendMessage: wrapSocket((...payload) => socket.volatile.emit('newMessage', ...payload)),
     createChannel: wrapSocket((...payload) => socket.volatile.emit('newChannel', ...payload)),
-    removeChannel: (payload) => {
-      socket.emit('removeChannel', payload);
-      if (currentChannelId === payload.id) {
-        const defaultChannelId = 1;
-        store.dispatch(channelsActions.setCurrent(defaultChannelId));
-      }
-    },
-    renameChannel: (payload) => socket.emit('renameChannel', payload),
-  }), [socket, currentChannelId]);
+    removeChannel: wrapSocket((...payload) => socket.volatile.emit('removeChannel', ...payload)),
+    renameChannel: wrapSocket((...payload) => socket.volatile.emit('renameChannel', ...payload)),
+  }), [socket]);
 
   return (
     <ApiContext.Provider value={socketApi}>{children}</ApiContext.Provider>

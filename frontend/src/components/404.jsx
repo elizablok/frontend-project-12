@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import getRoutes from '../../routes';
-import image from '../../assets/404.svg';
+
+import getRoutes from '../routes';
+import image from '../assets/404.svg';
 
 const MissingPage = () => {
   const { t } = useTranslation();

@@ -1,8 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card } from 'react-bootstrap';
+
 import SignInForm from './SignInForm';
-import signInImage from '../../../assets/signInImage.jpg';
+import signInImage from '../../assets/signInImage.jpg';
 
 const SignIn = () => {
   const { t } = useTranslation();

@@ -9,19 +9,19 @@ const modalsSlice = createSlice({
   name: 'modals',
   initialState,
   reducers: {
-    openModal: (state, { payload }) => {
+    open: (state, { payload }) => {
       const { type, data } = payload;
       return {
         ...state, type, data: data ?? {},
       };
     },
-    closeModal: (state) => ({
+    close: (state) => ({
       ...state, type: null, data: {},
     }),
   },
 });
 
-export const { openModal, closeModal } = modalsSlice.actions;
+export const modalsActions = { ...modalsSlice.actions };
 
 export const modalsSelectors = {
   selectTypeAndData: (state) => ({

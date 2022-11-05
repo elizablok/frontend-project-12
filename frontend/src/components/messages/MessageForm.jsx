@@ -1,13 +1,15 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { ArrowRightSquare } from 'react-bootstrap-icons';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Formik } from 'formik';
 import filter from 'leo-profanity';
-import { useApi } from '../../../../contexts/ApiProvider';
-import { useAuthn } from '../../../../contexts/AuthnProvider';
-import { channelsSelectors } from '../../../../slices/channelsSlice';
+
+import { useApi } from '../../contexts/ApiProvider';
+import { useAuthn } from '../../contexts/AuthnProvider';
+import { channelsSelectors } from '../../slices/channelsSlice';
+import notify, { getCodedNotificationMessage } from '../../notificator';
 
 const ChannelForm = () => {
   const { t } = useTranslation();
@@ -15,18 +17,31 @@ const ChannelForm = () => {
   const { sendMessage } = useApi();
   const { username } = useAuthn().user;
   const channelId = useSelector(channelsSelectors.selectCurrentId);
+  const [isSubmitted, setIsSubmitted] = useState(null);
 
   useEffect(() => {
     messageRef.current.focus();
-  }, []);
+  }, [isSubmitted]);
 
   return (
     <div className="mt-auto px-5 py-3">
       <Formik
         initialValues={{ body: '' }}
-        onSubmit={async ({ body }, { resetForm }) => {
-          sendMessage({ body: filter.clean(body), channelId, username });
-          resetForm({});
+        onSubmit={({ body }, { resetForm }) => {
+          setIsSubmitted(true);
+          return sendMessage({ body: filter.clean(body), channelId, username })
+            .then(() => {
+              setIsSubmitted(true);
+
+              resetForm({});
+            })
+            .catch(() => {
+              const codedMessage = getCodedNotificationMessage('messages', 'add', 'error');
+
+              setIsSubmitted(false);
+
+              notify('error', t(codedMessage));
+            });
         }}
       >
         {({
