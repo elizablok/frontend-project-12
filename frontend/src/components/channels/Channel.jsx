@@ -12,7 +12,7 @@ const Channel = ({
   const className = !channel.removable ? basicClassName : `${basicClassName} text-truncate`;
 
   const channelButton = (
-    <Button variant={variant} className={className} onClick={handleChoose}>
+    <Button variant={variant} className={className} onClick={handleChoose(channel.id)}>
       <span className="me-1">#</span>
       {channel.name}
     </Button>

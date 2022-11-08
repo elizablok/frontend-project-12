@@ -17,28 +17,28 @@ const ChannelForm = () => {
   const { sendMessage } = useApi();
   const { username } = useAuthn().user;
   const channelId = useSelector(channelsSelectors.selectCurrentId);
-  const [isSubmitted, setIsSubmitted] = useState(null);
+  const [state, setState] = useState(null);
 
   useEffect(() => {
     messageRef.current.focus();
-  }, [isSubmitted]);
+  }, [state]);
 
   return (
     <div className="mt-auto px-5 py-3">
       <Formik
         initialValues={{ body: '' }}
         onSubmit={({ body }, { resetForm }) => {
-          setIsSubmitted(true);
+          setState('submitting');
           return sendMessage({ body: filter.clean(body), channelId, username })
             .then(() => {
-              setIsSubmitted(true);
+              setState('filling');
 
               resetForm({});
             })
             .catch(() => {
               const codedMessage = getCodedNotificationMessage('messages', 'add', 'error');
 
-              setIsSubmitted(false);
+              setState('failed');
 
               notify('error', t(codedMessage));
             });

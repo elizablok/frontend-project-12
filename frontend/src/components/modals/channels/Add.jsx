@@ -1,16 +1,16 @@
 import React, {
-  useRef, useEffect, useState, useCallback,
+  useEffect, useState, useCallback,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Form, Modal, Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
-import * as yup from 'yup';
 
 import { useApi } from '../../../contexts/ApiProvider';
 import { channelsActions, channelsSelectors } from '../../../slices/channelsSlice';
 import notify, { getCodedNotificationMessage } from '../../../notificator';
 import LoadSpinner from '../../LoadSpinner';
+import getValidationSchema from './validationSchema';
 
 const Add = ({ isShown, closeHandler }) => {
   const allChannelsNames = useSelector(channelsSelectors.selectNames);
@@ -21,55 +21,33 @@ const Add = ({ isShown, closeHandler }) => {
   const isLoading = loading.state === 'pending';
   const isAdded = channelsIds.includes(addedChannelId);
 
-  const nameRef = useRef(null);
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { createChannel } = useApi();
 
   const handleLoading = useCallback(() => {
-    if (isLoading && isAdded(addedChannelId)) {
+    if (isLoading && isAdded) {
+      const codedMessage = getCodedNotificationMessage('channels', 'add', 'success');
+
       setLoading({ state: 'done', id: null });
       dispatch(channelsActions.setCurrent(addedChannelId));
-    }
-  }, [addedChannelId, dispatch, isAdded, isLoading]);
 
-  const handleFocus = useCallback(() => {
-    if (loading.state === null) {
-      nameRef.current.focus();
+      closeHandler();
+      notify('success', t(codedMessage));
     }
-  }, [loading.state]);
+  }, [addedChannelId, t, closeHandler, dispatch, isAdded, isLoading]);
 
   useEffect(() => {
-    handleFocus();
     handleLoading();
-  }, [handleFocus, handleLoading]);
-
-  const getFormError = (key) => `modals.channels.add.form.errors.${key}`;
-
-  const validationChannelsSchema = (channels) => yup.object().shape({
-    name: yup
-      .string()
-      .trim()
-      .required(getFormError('required'))
-      .min(3, getFormError('min'))
-      .max(20, getFormError('max'))
-      .notOneOf(channels, getFormError('notOneOf')),
-  });
+  }, [handleLoading]);
 
   const formik = useFormik({
     initialValues: {
       name: '',
     },
-    validationSchema: validationChannelsSchema(allChannelsNames),
+    validationSchema: getValidationSchema('add', allChannelsNames),
     onSubmit: ({ name }) => createChannel({ name })
-      .then((channel) => {
-        const codedMessage = getCodedNotificationMessage('channels', 'add', 'success');
-
-        setLoading({ state: 'pending', id: channel.id });
-
-        closeHandler();
-        notify('success', t(codedMessage));
-      })
+      .then((channel) => setLoading({ state: 'pending', id: channel.id }))
       .catch(() => {
         const codedMessage = getCodedNotificationMessage('channels', 'add', 'error');
 
@@ -95,7 +73,7 @@ const Add = ({ isShown, closeHandler }) => {
               <Form.Label className="visually-hidden" htmlFor="name">{t('modals.channels.label')}</Form.Label>
               <Form.Control
                 type="text"
-                ref={nameRef}
+                autoFocus
                 id="name"
                 name="name"
                 value={values.name}

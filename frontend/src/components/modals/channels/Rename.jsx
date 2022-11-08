@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import * as yup from 'yup';
 
 import { useApi } from '../../../contexts/ApiProvider';
 import { channelsSelectors } from '../../../slices/channelsSlice';
 import notify, { getCodedNotificationMessage } from '../../../notificator';
 import LoadSpinner from '../../LoadSpinner';
+import getValidationSchema from './validationSchema';
 
 const Rename = ({ isShown, entityId, closeHandler }) => {
   const { t } = useTranslation();
@@ -17,30 +17,13 @@ const Rename = ({ isShown, entityId, closeHandler }) => {
   const allChannelsNames = useSelector(channelsSelectors.selectNames)
     .map(({ name }) => name);
 
-  const nameRef = useRef(null);
   const channelName = useSelector((state) => channelsSelectors.selectById(state, entityId).name);
-
-  const getFormError = (key) => `modals.channels.rename.form.errors.${key}`;
-
-  const validationChannelsSchema = (channels) => yup.object().shape({
-    name: yup
-      .string()
-      .trim()
-      .required(getFormError('required'))
-      .min(3, getFormError('min'))
-      .max(20, getFormError('max'))
-      .notOneOf(channels, getFormError('notOneOf')),
-  });
-
-  useEffect(() => {
-    nameRef.current.focus();
-  }, []);
 
   const formik = useFormik({
     initialValues: {
       name: channelName,
     },
-    validationSchema: validationChannelsSchema(allChannelsNames),
+    validationSchema: getValidationSchema('rename', allChannelsNames),
     onSubmit: ({ name }) => renameChannel({ id: entityId, name })
       .then(() => {
         const codedMessage = getCodedNotificationMessage('channels', 'rename', 'success');
@@ -71,7 +54,7 @@ const Rename = ({ isShown, entityId, closeHandler }) => {
               <Form.Label className="visually-hidden" htmlFor="name">{t('modals.channels.label')}</Form.Label>
               <Form.Control
                 type="text"
-                ref={nameRef}
+                autoFocus
                 id="name"
                 name="name"
                 value={values.name}
