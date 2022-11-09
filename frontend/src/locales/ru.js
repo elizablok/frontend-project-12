@@ -19,6 +19,16 @@ export default {
         },
       },
     },
+    validation: {
+      min_one: 'Минимум {{count}} символ',
+      min_few: 'Минимум {{count}} символа',
+      min_many: 'Минимум {{count}} символов',
+      max_one: 'Максимум {{count}} символ',
+      max_few: 'Максимум {{count}} символа',
+      max_many: 'Максимум {{count}} символов',
+      required: 'Обязательно',
+      notOneOf: 'Канал с таким именем уже существует',
+    },
     channels: {
       managing: {
         title: 'Управление каналом',
@@ -82,25 +92,9 @@ export default {
         label: 'Имя канала',
         add: {
           title: 'Добавить канал',
-          form: {
-            errors: {
-              required: 'Обязательно',
-              min: 'Минимум 3 символа',
-              max: 'Максимум 20 символов',
-              notOneOf: 'Канал с таким именем уже существует',
-            },
-          },
         },
         rename: {
           title: 'Переименовать канал',
-          form: {
-            errors: {
-              required: 'Обязательно',
-              min: 'Минимум 3 символа',
-              max: 'Максимум 20 символов',
-              notOneOf: 'Канал с таким именем уже существует',
-            },
-          },
         },
         remove: {
           title: 'Удалить канал',

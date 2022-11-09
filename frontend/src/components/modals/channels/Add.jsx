@@ -10,7 +10,7 @@ import { useApi } from '../../../contexts/ApiProvider';
 import { channelsActions, channelsSelectors } from '../../../slices/channelsSlice';
 import notify, { getCodedNotificationMessage } from '../../../notificator';
 import LoadSpinner from '../../LoadSpinner';
-import getValidationSchema from './validationSchema';
+import validationSchema from './validationSchema';
 
 const Add = ({ isShown, closeHandler }) => {
   const allChannelsNames = useSelector(channelsSelectors.selectNames);
@@ -45,7 +45,7 @@ const Add = ({ isShown, closeHandler }) => {
     initialValues: {
       name: '',
     },
-    validationSchema: getValidationSchema('add', allChannelsNames),
+    validationSchema: validationSchema.notOneOf(allChannelsNames),
     onSubmit: ({ name }) => createChannel({ name })
       .then((channel) => setLoading({ state: 'pending', id: channel.id }))
       .catch(() => {

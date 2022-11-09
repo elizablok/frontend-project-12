@@ -6,13 +6,12 @@ import mappingLoadingState from '../mappingStates';
 
 export const fetchData = createAsyncThunk(
   'channels/fetchChannels',
-  (payload) => axios.get(getRoutes.dataPath(), {
-    headers: payload,
-  })
-    .then((res) => res.data)
-    .catch((e) => {
-      throw e;
-    }),
+  async (payload) => {
+    const { data } = await axios.get(getRoutes.dataPath(), {
+      headers: payload,
+    });
+    return data;
+  },
 );
 
 const channelsAdapter = createEntityAdapter();
@@ -54,6 +53,7 @@ const channelsSlice = createSlice({
       };
       state.loading = loading; // eslint-disable-line
     }).addCase(fetchData.rejected, (state, { error }) => {
+      console.log(error);
       const loading = {
         state: mappingLoadingState.failed,
         error,

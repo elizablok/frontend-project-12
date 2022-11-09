@@ -8,7 +8,7 @@ import { useApi } from '../../../contexts/ApiProvider';
 import { channelsSelectors } from '../../../slices/channelsSlice';
 import notify, { getCodedNotificationMessage } from '../../../notificator';
 import LoadSpinner from '../../LoadSpinner';
-import getValidationSchema from './validationSchema';
+import validationSchema from './validationSchema';
 
 const Rename = ({ isShown, entityId, closeHandler }) => {
   const { t } = useTranslation();
@@ -23,7 +23,7 @@ const Rename = ({ isShown, entityId, closeHandler }) => {
     initialValues: {
       name: channelName,
     },
-    validationSchema: getValidationSchema('rename', allChannelsNames),
+    validationSchema: validationSchema.notOneOf(allChannelsNames),
     onSubmit: ({ name }) => renameChannel({ id: entityId, name })
       .then(() => {
         const codedMessage = getCodedNotificationMessage('channels', 'rename', 'success');

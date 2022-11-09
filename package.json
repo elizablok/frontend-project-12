@@ -1,7 +1,7 @@
 {
-  "name": "@hexlet/code",
+  "name": "slack-chat",
   "version": "1.0.0",
-  "description": "[![Actions Status](https://github.com/elizablok/frontend-project-12/workflows/hexlet-check/badge.svg)](https://github.com/elizablok/frontend-project-12/actions)",
+  "description": "Slack Chat",
   "main": "index.js",
   "scripts": {
     "build": "npm run build --prefix frontend",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/elizablok/frontend-project-12.git"
+    "url": "git+https://github.com/elizablok/slack-chat.git"
   },
   "author": "eliza blok",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/elizablok/frontend-project-12/issues"
+    "url": "https://github.com/elizablok/slack-chat/issues"
   },
-  "homepage": "https://github.com/elizablok/frontend-project-12#readme",
+  "homepage": "https://github.com/elizablok/slack-chat#readme",
   "dependencies": {
     "@hexlet/chat-server": "^1.1.6"
   }

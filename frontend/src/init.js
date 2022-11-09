@@ -4,6 +4,8 @@ import leoProfanity from 'leo-profanity';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { Provider as MainProvider } from 'react-redux';
 import { ErrorBoundary, Provider as RollbarProvider } from '@rollbar/react';
+import { setLocale } from 'yup';
+
 import App from './App';
 import resources from './locales/index.js';
 import store from './slices/index';
@@ -50,6 +52,15 @@ const init = async (socket) => {
       debug: false,
       resources,
     });
+
+  setLocale({
+    mixed: {
+      required: 'validation.required',
+      notOneOf: 'validation.notOneOf',
+      min: ({ min }) => ({ key: 'validation.min', values: { count: min } }),
+      max: ({ max }) => ({ key: 'validation.max', values: { count: max } }),
+    },
+  });
 
   return (
     <RollbarProvider config={rollbarConfig}>
